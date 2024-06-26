@@ -1,17 +1,12 @@
-//
-//  WeatherView.swift
-//  OpenWeatherAppSwift
-//
-//  Created by Kerem Semiz on 26.06.24.
-//
-
 import SwiftUI
 
 struct WeatherView: View {
     var weather: ResponseBody
+    @State private var isExpanded = false
+    @State private var offset: CGFloat = 0
     
     var body: some View {
-        ZStack(alignment: .leading) {
+        ZStack(alignment: .top) {
             VStack {
                 VStack(alignment: .leading, spacing: 5) {
                     Text(weather.name)
@@ -61,36 +56,104 @@ struct WeatherView: View {
             }
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color(hue: 0.656, saturation: 0.787, brightness: 0.354))
             
-            VStack {
-                Spacer()
-                VStack(alignment: .leading, spacing: 20) {
-                    Text("Weather now")
-                        .bold()
-                        .padding(.bottom)
-                    
-                    HStack {
-                        WeatherRow(logo: "thermometer", name: "Min. temp", value: (weather.main.tempMin.roundDouble() + "°"))
-                        Spacer()
-                        WeatherRow(logo: "thermometer", name: "Max. temp", value: (weather.main.tempMax.roundDouble() + "°"))
+            GeometryReader { geometry in
+                VStack {
+                    Spacer()
+                    VStack(alignment: .leading, spacing: 20) {
+                        RoundedRectangle(cornerRadius: 5)
+                            .frame(width: 40, height: 5)
+                            .foregroundColor(Color.white)
+                            .padding(.top, 5)
+                        
+                        Text("Weather now")
+                            .bold()
+                            .padding(.horizontal)
+                        
+                        HStack {
+                            WeatherRow(logo: "thermometer", name: "Min. temp", value: weather.main.tempMin.roundDouble() + "°")
+                            Spacer()
+                            WeatherRow(logo: "thermometer", name: "Max. temp", value: weather.main.tempMax.roundDouble() + "°")
+                        }
+                        .padding(.horizontal)
+                        .padding(.bottom, 0)
+                        
+                        HStack {
+                            WeatherRow(logo: "wind", name: "Wind speed", value: weather.wind.speed.roundDouble() + " m/s")
+                            Spacer()
+                            WeatherRow(logo: "humidity", name: "Humidity", value: "\(weather.main.humidity.roundDouble())%")
+                        }.padding()
+                        
+                        if isExpanded {
+                            // Add additional details here, like hourly and daily forecasts
+                            Text("Hourly Forecast")
+                                .font(.headline)
+                                .bold()
+                                .padding(.horizontal)
+                            
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                VStack {
+                                    HStack {
+                                        WeatherRow(logo: "thermometer", name: "Min. temp", value: weather.main.tempMin.roundDouble() + "°")
+                                        Spacer()
+                                        WeatherRow(logo: "thermometer", name: "Max. temp", value: weather.main.tempMax.roundDouble() + "°")
+                                    }
+                                    .padding(.horizontal)
+                                    .padding(.bottom, 0)
+                                    
+                                    HStack {
+                                        WeatherRow(logo: "wind", name: "Wind speed", value: weather.wind.speed.roundDouble() + " m/s")
+                                        Spacer()
+                                        WeatherRow(logo: "humidity", name: "Humidity", value: "\(weather.main.humidity.roundDouble())%")
+                                    }.padding()
+                                }
+                            }
+                            .padding(.horizontal)
+                            
+                            Text("Daily Forecast")
+                                .font(.headline)
+                                .padding(.top)
+                            
+                            ScrollView(.vertical, showsIndicators: false) {
+                                VStack {
+                                    // Add your daily forecast view here
+                                }
+                            }
+                            .padding(.horizontal)
+                        }
                     }
-                    
-                    HStack {
-                        WeatherRow(logo: "wind", name: "Wind speed", value: (weather.wind.speed.roundDouble() + " m/s"))
-                        Spacer()
-                        WeatherRow(logo: "humidity", name: "Humidity", value: "\(weather.main.humidity)%")
-                    }
+                    .background(Color.white)
+                    .cornerRadius(20, corners: [.topLeft, .topRight])
+                    .shadow(radius: 10)
+                    .offset(y: offset)
+                    .gesture(
+                        DragGesture()
+                            .onChanged { value in
+                                let newOffset = value.translation.height
+                                if newOffset < 0 {
+                                    self.offset = newOffset
+                                }
+                            }
+                            .onEnded { value in
+                                withAnimation {
+                                    if -value.translation.height > geometry.size.height / 4 {
+                                        self.isExpanded = true
+                                        self.offset = -geometry.size.height + 800
+                                    } else {
+                                        self.isExpanded = false
+                                        self.offset = 0
+                                    }
+                                }
+                            }
+                    )
+                    .frame(height: isExpanded ? geometry.size.height * 0.7 : geometry.size.height * 0.3)
+                    .animation(.easeInOut)
+                    .foregroundColor(Color(hue: 0.656, saturation: 0.787, brightness: 0.354))
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
-                .padding(.bottom, 20)
-                .foregroundColor(Color(hue: 0.656, saturation: 0.787, brightness: 0.354))
-                .background(Color.white)
-                .cornerRadius(20, corners: [.topLeft, .topRight])
             }
         }
         .edgesIgnoringSafeArea(.bottom)
-        .background(Color(hue: 0.656, saturation: 0.787, brightness: 0.354))
         .preferredColorScheme(.dark)
     }
     

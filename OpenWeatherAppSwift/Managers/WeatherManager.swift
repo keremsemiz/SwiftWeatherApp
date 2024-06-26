@@ -34,6 +34,17 @@ class WeatherManager {
         return decodedData
         
     }
+    
+    func getHourlyForecast(latitude: CLLocationDegrees, longitude: CLLocationDegrees) async throws -> HourlyForecastResponse {
+        guard let url = URL(string: "https://pro.openweathermap.org/data/2.5/forecast/hourly?lat=\(latitude)&lon=\(longitude)&appid=\(apiKey)&units=metric") else { fatalError("Missing URL") }
+        
+        
+        let (data, response) = try await URLSession.shared.data(from: url)
+        guard (response as? HTTPURLResponse)?.statusCode == 200 else { fatalError("Error fetching data") }
+        let decodedData = try JSONDecoder().decode(HourlyForecastResponse.self, from: data)
+        return decodedData
+
+    }
 }
 
 // how the response looks like from the openweather api
@@ -75,4 +86,61 @@ extension ResponseBody.MainResponse {
     var feelsLike: Double { return feels_like }
     var tempMin: Double { return temp_min }
     var tempMax: Double { return temp_max }
+}
+
+
+struct HourlyForecastResponse: Codable {
+    var list: [HourlyWeather]
+    var city: City
+}
+
+struct HourlyWeather: Codable {
+    var dt: Int
+    var main: Main
+    var weather: [Weather]
+    var clouds: Clouds
+    var wind: Wind
+    var visibility: Int
+    var pop: Double
+    var rain: Rain?
+}
+
+struct Main: Codable {
+    var temp: Double
+    var feels_like: Double
+    var temp_min: Double
+    var temp_max: Double
+    var pressure: Int
+    var humidity: Int
+}
+
+struct Weather: Codable {
+    var id: Int
+    var main: String
+    var description: String
+    var icon: String
+}
+
+struct Clouds: Codable {
+    var all: Int
+}
+
+struct Wind: Codable {
+    var speed: Double
+    var deg: Int
+}
+
+struct Rain: Codable {
+    var oneH: Double?
+}
+
+struct City: Codable {
+    var name: String
+    var coord: Coordinates
+    var country: String
+}
+
+struct Coordinates: Codable {
+    var lat: Double
+    var lon: Double
 }

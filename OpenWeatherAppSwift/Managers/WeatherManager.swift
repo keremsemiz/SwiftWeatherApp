@@ -53,8 +53,6 @@ class WeatherManager {
 
 // ResponseBody and other related struct definitions remain the same.
 
-
-// how the response looks like from the openweather api
 struct ResponseBody: Decodable {
     var coord: CoordinatesResponse
     var weather: [WeatherResponse]
@@ -102,7 +100,7 @@ struct HourlyForecastResponse: Codable {
 
 struct HourlyWeather: Codable {
     var dt: Int
-    var dt_txt: String
+    var dtTxt: String
     var main: Main
     var weather: [Weather]
     var clouds: Clouds
@@ -110,15 +108,36 @@ struct HourlyWeather: Codable {
     var visibility: Int
     var pop: Double
     var rain: Rain?
+    
+    enum CodingKeys: String, CodingKey {
+        case dt
+        case dtTxt = "dt_txt"
+        case main
+        case weather
+        case clouds
+        case wind
+        case visibility
+        case pop
+        case rain
+    }
 }
 
 struct Main: Codable {
     var temp: Double
-    var feels_like: Double
-    var temp_min: Double
-    var temp_max: Double
+    var feelsLike: Double
+    var tempMin: Double
+    var tempMax: Double
     var pressure: Int
     var humidity: Int
+
+    enum CodingKeys: String, CodingKey {
+        case temp
+        case feelsLike = "feels_like"
+        case tempMin = "temp_min"
+        case tempMax = "temp_max"
+        case pressure
+        case humidity
+    }
 }
 
 struct Weather: Codable {

@@ -6,7 +6,7 @@
     {
       "dt": 1661875200,
       "main": {
-        "temp": 296.34,
+        "temp": 25.5,
         "feels_like": 296.02,
         "temp_min": 296.34,
         "temp_max": 298.24,
@@ -18,8 +18,8 @@
       },
       "weather": [
         {
-          "id": 500,
-          "main": "Rain",
+          "id": 300,
+          "main": "Drizzle",
           "description": "light rain",
           "icon": "10d"
         }
@@ -45,7 +45,7 @@
     {
       "dt": 1661878800,
       "main": {
-        "temp": 296.31,
+        "temp": 23.1,
         "feels_like": 296.07,
         "temp_min": 296.2,
         "temp_max": 296.31,
@@ -57,8 +57,8 @@
       },
       "weather": [
         {
-          "id": 500,
-          "main": "Rain",
+          "id": 701,
+          "main": "Fog",
           "description": "light rain",
           "icon": "10d"
         }
@@ -84,7 +84,7 @@
     {
       "dt": 1661882400,
       "main": {
-        "temp": 294.94,
+        "temp": 21.78,
         "feels_like": 294.74,
         "temp_min": 292.84,
         "temp_max": 294.94,
@@ -120,14 +120,52 @@
       },
       "dt_txt": "2022-08-30 18:00:00"
     },
-      .....
     {
-      "dt": 1662217200,
+      "dt": 1661886000,
       "main": {
-        "temp": 294.14,
-        "feels_like": 293.99,
-        "temp_min": 294.14,
-        "temp_max": 294.14,
+        "temp": 19.6,
+        "feels_like": 293.74,
+        "temp_min": 292.84,
+        "temp_max": 293.94,
+        "pressure": 1015,
+        "sea_level": 1015,
+        "grnd_level": 931,
+        "humidity": 60,
+        "temp_kf": 2.1
+      },
+      "weather": [
+        {
+          "id": 721,
+          "main": "Haze",
+          "description": "light rain",
+          "icon": "10n"
+        }
+      ],
+      "clouds": {
+        "all": 93
+      },
+      "wind": {
+        "speed": 1.97,
+        "deg": 157,
+        "gust": 3.39
+      },
+      "visibility": 10000,
+      "pop": 0.33,
+      "rain": {
+        "1h": 0.2
+      },
+      "sys": {
+        "pod": "n"
+      },
+      "dt_txt": "2022-08-30 19:00:00"
+    },
+    {
+      "dt": 1661889600,
+      "main": {
+        "temp": 18,
+        "feels_like": 292.99,
+        "temp_min": 293.14,
+        "temp_max": 293.14,
         "pressure": 1014,
         "sea_level": 1014,
         "grnd_level": 931,
@@ -155,7 +193,7 @@
       "sys": {
         "pod": "d"
       },
-      "dt_txt": "2022-09-03 15:00:00"
+      "dt_txt": "2022-08-30 20:00:00"
     }
   ],
   "city": {

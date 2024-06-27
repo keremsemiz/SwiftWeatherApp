@@ -64,19 +64,18 @@ struct WeatherView: View {
                     Spacer()
                     VStack(alignment: .leading, spacing: 20) {
                         RoundedRectangle(cornerRadius: 5)
-                            .frame(width: 40, height: 5, alignment: .leading)
+                            .frame(width: 40, height: 5)
                             .foregroundColor(Color.white)
                             .padding(.top, 5)
-                            
                         
                         Text("Weather now")
                             .bold()
                             .padding(.horizontal)
                         
                         HStack {
-                            WeatherRow(logo: "thermometer.low", name: "Min. temp", value: weather.main.tempMin.roundDouble() + "°")
+                            WeatherRow(logo: "thermometer", name: "Min. temp", value: weather.main.tempMin.roundDouble() + "°")
                             Spacer()
-                            WeatherRow(logo: "thermometer.high", name: "Max. temp", value: weather.main.tempMax.roundDouble() + "°")
+                            WeatherRow(logo: "thermometer", name: "Max. temp", value: weather.main.tempMax.roundDouble() + "°")
                         }
                         .padding(.horizontal)
                         .padding(.bottom, 0)
@@ -87,26 +86,25 @@ struct WeatherView: View {
                             WeatherRow(logo: "humidity", name: "Humidity", value: "\(weather.main.humidity.roundDouble())%")
                         }.padding()
                         
-                        if isExpanded {
-                            // Add additional details here, like hourly and daily forecasts
-                            if let hourlyWeather = hourlyWeather {
-                                Text("Hourly Forecast")
-                                    .font(.headline)
-                                    .padding(.top)
-
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    HStack {
-                                        // Display hourly forecast
-                                        ForEach(hourlyWeather.list, id: \.dt) { weather in
-                                            DetailRow(logo: "sun.max", name: "\(weather.dt_txt)", value: "\(weather.main.temp.roundDouble())°")
-                                                .padding()
-                                                .background(Color.white.opacity(0.5))
-                                                .cornerRadius(10)
+                        if isExpanded, let hourlyWeather = hourlyWeather {
+                            Text("Hourly Forecast")
+                                .font(.headline)
+                                .padding(.horizontal)
+                            
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack {
+                                    // add dynamic time somehow its annoying
+                                    ForEach(hourlyWeather.list, id: \.dt) { weather in
+                                        VStack {
+                                            DetailRow(logo: iconName(for: Double(weather.weather[0].id)), name: formatHourAndMinute(weather.dtTxt),value: "\(weather.main.temp.roundDouble())°")
                                         }
+                                        .padding(.bottom)
+                                        .background(Color.white.opacity(0.5))
+                                        .cornerRadius(10)
                                     }
                                 }
-                                .padding(.horizontal)
                             }
+                            .padding(.horizontal)
                             
                             Text("Daily Forecast")
                                 .font(.headline)
@@ -114,19 +112,7 @@ struct WeatherView: View {
                             
                             ScrollView(.vertical, showsIndicators: false) {
                                 VStack {
-                                    HStack {
-                                        WeatherRow(logo: "thermometer", name: "Min. temp", value: weather.main.tempMin.roundDouble() + "°")
-                                        Spacer()
-                                        WeatherRow(logo: "thermometer", name: "Max. temp", value: weather.main.tempMax.roundDouble() + "°")
-                                    }
-                                    .padding(.horizontal)
-                                    .padding(.bottom, 0)
-                                    
-                                    HStack {
-                                        WeatherRow(logo: "wind", name: "Wind speed", value: weather.wind.speed.roundDouble() + " m/s")
-                                        Spacer()
-                                        WeatherRow(logo: "humidity", name: "Humidity", value: "\(weather.main.humidity.roundDouble())%")
-                                    }.padding()
+                                    // daily view
                                 }
                             }
                             .padding(.horizontal)
@@ -136,20 +122,16 @@ struct WeatherView: View {
                     .cornerRadius(20, corners: [.topLeft, .topRight])
                     .shadow(radius: 10)
                     .offset(y: offset)
-                    .frame(height: 1000)
                     .gesture(
                         DragGesture()
                             .onChanged { value in
-                                let newOffset = value.translation.height
-                                if newOffset < 0 {
-                                    self.offset = newOffset
-                                }
+                                self.offset = value.translation.height
                             }
                             .onEnded { value in
                                 withAnimation {
-                                    if -value.translation.height > geometry.size.height / 4 {
+                                    if self.offset < -100 {
                                         self.isExpanded = true
-                                        self.offset = -geometry.size.height + 800
+                                        self.offset = -geometry.size.height / 2 + 500
                                     } else {
                                         self.isExpanded = false
                                         self.offset = 0
@@ -157,7 +139,7 @@ struct WeatherView: View {
                                 }
                             }
                     )
-                    .frame(height: isExpanded ? geometry.size.height * 0.7 : geometry.size.height * 0.3)
+                    .frame(height: isExpanded ? geometry.size.height * 1.7 : geometry.size.height * 0.3)
                     .foregroundColor(Color(hue: 0.656, saturation: 0.787, brightness: 0.354))
                 }
             }
@@ -211,10 +193,21 @@ struct WeatherView: View {
         case 803:
             return "cloud"
         case 804:
-            return "cloud.fill"
+            return "smoke"
         default:
             return "questionmark" // unknown weather
         }
+    }
+    func formatHourAndMinute(_ dateString: String) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        
+        if let date = dateFormatter.date(from: dateString) {
+            dateFormatter.dateFormat = "HH:mm"
+            return dateFormatter.string(from: date)
+            
+        }
+        return dateString
     }
 }
 

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct WeatherView: View {
     var weather: ResponseBody
+    var hourlyWeather: HourlyForecastResponse?
     @State private var isExpanded = false
     @State private var offset: CGFloat = 0
     
@@ -63,18 +64,19 @@ struct WeatherView: View {
                     Spacer()
                     VStack(alignment: .leading, spacing: 20) {
                         RoundedRectangle(cornerRadius: 5)
-                            .frame(width: 40, height: 5)
+                            .frame(width: 40, height: 5, alignment: .leading)
                             .foregroundColor(Color.white)
                             .padding(.top, 5)
+                            
                         
                         Text("Weather now")
                             .bold()
                             .padding(.horizontal)
                         
                         HStack {
-                            WeatherRow(logo: "thermometer", name: "Min. temp", value: weather.main.tempMin.roundDouble() + "°")
+                            WeatherRow(logo: "thermometer.low", name: "Min. temp", value: weather.main.tempMin.roundDouble() + "°")
                             Spacer()
-                            WeatherRow(logo: "thermometer", name: "Max. temp", value: weather.main.tempMax.roundDouble() + "°")
+                            WeatherRow(logo: "thermometer.high", name: "Max. temp", value: weather.main.tempMax.roundDouble() + "°")
                         }
                         .padding(.horizontal)
                         .padding(.bottom, 0)
@@ -87,12 +89,30 @@ struct WeatherView: View {
                         
                         if isExpanded {
                             // Add additional details here, like hourly and daily forecasts
-                            Text("Hourly Forecast")
+                            if let hourlyWeather = hourlyWeather {
+                                Text("Hourly Forecast")
+                                    .font(.headline)
+                                    .padding(.top)
+
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack {
+                                        // Display hourly forecast
+                                        ForEach(hourlyWeather.list, id: \.dt) { weather in
+                                            DetailRow(logo: "sun.max", name: "\(weather.dt_txt)", value: "\(weather.main.temp.roundDouble())°")
+                                                .padding()
+                                                .background(Color.white.opacity(0.5))
+                                                .cornerRadius(10)
+                                        }
+                                    }
+                                }
+                                .padding(.horizontal)
+                            }
+                            
+                            Text("Daily Forecast")
                                 .font(.headline)
-                                .bold()
                                 .padding(.horizontal)
                             
-                            ScrollView(.horizontal, showsIndicators: false) {
+                            ScrollView(.vertical, showsIndicators: false) {
                                 VStack {
                                     HStack {
                                         WeatherRow(logo: "thermometer", name: "Min. temp", value: weather.main.tempMin.roundDouble() + "°")
@@ -110,23 +130,13 @@ struct WeatherView: View {
                                 }
                             }
                             .padding(.horizontal)
-                            
-                            Text("Daily Forecast")
-                                .font(.headline)
-                                .padding(.top)
-                            
-                            ScrollView(.vertical, showsIndicators: false) {
-                                VStack {
-                                    // Add your daily forecast view here
-                                }
-                            }
-                            .padding(.horizontal)
                         }
                     }
                     .background(Color.white)
                     .cornerRadius(20, corners: [.topLeft, .topRight])
                     .shadow(radius: 10)
                     .offset(y: offset)
+                    .frame(height: 1000)
                     .gesture(
                         DragGesture()
                             .onChanged { value in
@@ -148,7 +158,6 @@ struct WeatherView: View {
                             }
                     )
                     .frame(height: isExpanded ? geometry.size.height * 0.7 : geometry.size.height * 0.3)
-                    .animation(.easeInOut)
                     .foregroundColor(Color(hue: 0.656, saturation: 0.787, brightness: 0.354))
                 }
             }
@@ -211,6 +220,6 @@ struct WeatherView: View {
 
 struct WeatherView_Previews: PreviewProvider {
     static var previews: some View {
-        WeatherView(weather: previewWeather)
+        WeatherView(weather: previewWeather, hourlyWeather: previewHourlyWeather)
     }
 }

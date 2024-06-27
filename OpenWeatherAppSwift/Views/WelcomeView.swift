@@ -13,6 +13,7 @@ struct WelcomeView: View {
     @State private var city: String = ""
     @State private var weatherManager = WeatherManager()
     @State private var weather: ResponseBody?
+    @State private var hourlyWeather: HourlyForecastResponse?
 
     var body: some View {
         VStack {
@@ -54,7 +55,7 @@ struct WelcomeView: View {
             .padding()
 
             if let weather = weather {
-                WeatherView(weather: weather)
+                WeatherView(weather: weather, hourlyWeather: hourlyWeather!)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -1,27 +1,22 @@
-//
-//  ContentView.swift
-//  OpenWeatherAppSwift
-//
-//  Created by Kerem Semiz on 26.06.24.
-//
-
 import SwiftUI
 
 struct ContentView: View {
     @StateObject var locationManager = LocationManager()
     var weatherManager = WeatherManager()
     @State var weather: ResponseBody?
+    @State var hourlyWeather: HourlyForecastResponse?
     
     var body: some View {
         VStack {
             if let location = locationManager.location {
                 if let weather = weather {
-                    WeatherView(weather: weather)
+                    WeatherView(weather: weather, hourlyWeather: hourlyWeather)
                 } else {
                     LoadingView()
                         .task {
                             do {
                                 weather = try await weatherManager.getCurrentWeather(latitude: location.latitude, longitude: location.longitude)
+                                hourlyWeather = try await weatherManager.getHourlyForecast(latitude: location.latitude, longitude: location.longitude)
                             } catch {
                                 print("Error getting weather: \(error)")
                             }

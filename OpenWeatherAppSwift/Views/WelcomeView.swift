@@ -4,7 +4,6 @@
 //
 //  Created by Kerem Semiz on 26.06.24.
 //
-
 import SwiftUI
 import CoreLocationUI
 
@@ -12,8 +11,9 @@ struct WelcomeView: View {
     @EnvironmentObject var locationManager: LocationManager
     @State private var city: String = ""
     @State private var weatherManager = WeatherManager()
-    @State private var weather: ResponseBody?
+    @State private var currentWeather: CurrentWeatherResponse?
     @State private var hourlyWeather: HourlyForecastResponse?
+    @State private var dailyWeather: DailyForecastResponse?
 
     var body: some View {
         VStack {
@@ -54,8 +54,8 @@ struct WelcomeView: View {
             }
             .padding()
 
-            if let weather = weather {
-                WeatherView(weather: weather, hourlyWeather: hourlyWeather!)
+            if let currentWeather = currentWeather, let hourlyWeather = hourlyWeather, let dailyWeather = dailyWeather {
+                WeatherView(currentWeather: currentWeather, hourlyWeather: hourlyWeather, dailyWeather: dailyWeather)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -63,7 +63,9 @@ struct WelcomeView: View {
     
     func fetchWeather() async {
         do {
-            weather = try await weatherManager.getWeatherByCity(city: city)
+            currentWeather = try await weatherManager.getCurrentWeather(city: city)
+            hourlyWeather = try await weatherManager.getHourlyForecast(city: city)
+            dailyWeather = try await weatherManager.getDailyForecast(city: city, days: 3)
         } catch {
             print("Error fetching weather: \(error)")
         }

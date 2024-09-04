@@ -64,7 +64,7 @@ The app uses the OpenWeatherMap API to fetch live weather data. For more informa
 ## 📝 License
 This project is licensed under the MIT License. See the LICENSE file for details.
 
-##💡 Contributing
+## 💡 Contributing
 Contributions are welcome! Follow these steps to contribute:
 
 1. Fork the repository.
